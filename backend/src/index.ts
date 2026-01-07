@@ -1,9 +1,9 @@
 import { createApp } from "./app.js";
+import { env } from "./config/env.js";
 
-const PORT = 3000;
 
 const app = createApp();
 
-app.listen(PORT, () => {
-  console.log(`Termind backend listening on port ${PORT}`);
+app.listen(env.port, () => {
+  console.log(`Termind backend listening on port ${env.port} (${env.nodeEnv})`);
 });
