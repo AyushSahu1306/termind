@@ -11,4 +11,6 @@ function getEnv(name:string):string {
 export const env = {
   port: Number(getEnv("PORT")),
   nodeEnv: getEnv("NODE_ENV"),
+  jwtSecret:getEnv("JWT_SECRET"),
+  jwtTtlMinutes:Number(getEnv("JWT_TTL_MINUTES"))
 };
