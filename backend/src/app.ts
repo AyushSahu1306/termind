@@ -1,15 +1,13 @@
 import express from "express";
 import { prisma } from "./config/prisma.js";
+import { authRouter } from "./auth/http/auth.routes.js";
 
 export function createApp() {
   const app = express();
 
-  app.get("/health", async(_req, res) => {
-    await prisma.healthCheck.create({
-      data: {},
-    });
-    res.json({ status: "ok",db:"connected" });
-  });
+  app.use(express.json());
+
+  app.use("/auth",authRouter);
 
   return app;
 }
