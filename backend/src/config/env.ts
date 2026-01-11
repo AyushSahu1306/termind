@@ -12,5 +12,9 @@ export const env = {
   port: Number(getEnv("PORT")),
   nodeEnv: getEnv("NODE_ENV"),
   jwtSecret:getEnv("JWT_SECRET"),
-  jwtTtlMinutes:Number(getEnv("JWT_TTL_MINUTES"))
+  jwtTtlMinutes:Number(getEnv("JWT_TTL_MINUTES")),
+
+  githubClientId: getEnv("GITHUB_CLIENT_ID"),
+  githubClientSecret: getEnv("GITHUB_CLIENT_SECRET"),
+  githubCallbackUrl: getEnv("GITHUB_CALLBACK_URL"),
 };
