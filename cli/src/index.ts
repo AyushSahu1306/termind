@@ -13,10 +13,11 @@ program
 program
   .command("login")
   .description("Log in to Termind")
-  .action(()=>{
-    login().catch((err)=>{
+  .option("--wait","Wait for login to complete")
+  .action((options)=>{
+    login(Boolean(options.wait)).catch((err)=>{
       console.error("Unexpected error : ",err);
-      process.exit(1);
+      process.exit(1);  
     })
   })
 

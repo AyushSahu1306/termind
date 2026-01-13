@@ -13,6 +13,7 @@ export type StoredAccount = {
 export type AuthStore = {
     version: 1;
     activeAccountId: string | null;
+    pendingLoginRequestId?: string;
     accounts: Record<string, StoredAccount>;
 }
 
