@@ -60,7 +60,7 @@ export const rotateRefreshToken = async(params:{
     const presentedHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
     if (presentedHash !== existing.tokenHash) {
-        await revokeSession({ sessionId });
+        // await revokeSession({ sessionId });//for race condition
         throw new Error("Invalid refresh token");
     }
 
