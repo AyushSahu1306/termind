@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { login } from "./auth/login.js";
 import { logout } from "./auth/logout.js";
 import { status } from "./auth/status.js";
+import { authenticatedFetch } from "./auth/authenticated-fetch.js";
 
 const program = new Command();
 
@@ -44,6 +45,8 @@ program
       process.exit(1);
     }
   })
+
+
 
 program.parse();
 
