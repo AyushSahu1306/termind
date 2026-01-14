@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import { login } from "./auth/login.js";
 import { logout } from "./auth/logout.js";
+import { status } from "./auth/status.js";
 
 const program = new Command();
 
@@ -30,6 +31,18 @@ program
       console.error("Unexpected error: ",err);
       process.exit(1);
     })
+  })
+
+program 
+  .command("status")
+  .description("Show authentication status")
+  .action(()=>{
+    try {
+      status();
+    } catch (error) {
+      console.error("Unexpected error:",error);
+      process.exit(1);
+    }
   })
 
 program.parse();
