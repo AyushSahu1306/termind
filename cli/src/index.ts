@@ -5,6 +5,7 @@ import { login } from "./auth/login.js";
 import { logout } from "./auth/logout.js";
 import { status } from "./auth/status.js";
 import { authenticatedFetch } from "./auth/authenticated-fetch.js";
+import { whoami } from "./commands/whoami.js";
 
 const program = new Command();
 
@@ -44,6 +45,16 @@ program
       console.error("Unexpected error:",error);
       process.exit(1);
     }
+  })
+
+program
+  .command("whoami")
+  .description("Show the currently authenticated user")
+  .action(()=>{
+    whoami().catch((err)=>{
+      console.error(err.message);
+      process.exit(1);
+    })
   })
 
 

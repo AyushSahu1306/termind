@@ -23,19 +23,23 @@ export async function authenticatedFetch(
         return headers;
     }
     
-    
+
 
     let response = await fetch(input,{
         ...init,
         headers:buildHeaders()
     })
 
-    if(response.status !== 401){
+
+    if(response.status !== 401 && response.status !== 404){
         return response;
     }
 
+
     const refreshed = await attemptRefresh();
 
+    
+    
     if(refreshed){
         response = await fetch(input,{
             ...init,
@@ -66,9 +70,11 @@ async function attemptRefresh(): Promise<boolean> {
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
                 sessionId:account.sessionId,
-                refreshToken:account.refreshToken
+                refreshToken:account.refreshToken,
+                userId:account.userId
             })
         });
+
 
         if(!res.ok){
             return false;

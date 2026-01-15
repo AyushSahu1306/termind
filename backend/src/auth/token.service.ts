@@ -19,4 +19,5 @@ export function verifyAccessToken(token:string){
         return jwt.verify(token,env.jwtSecret) as AccessTokenPayload;
     } catch (error) {
         throw new Error("Invalid or expired access token");
-    }}
+    }
+}

@@ -53,6 +53,7 @@ model LoginRequest {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now()) @map("created_at")
   expiresAt   DateTime @map("expires_at")
+  refreshToken String?
   completedAt DateTime? @map("completed_at")
   sessionId   String?  @map("session_id")
 

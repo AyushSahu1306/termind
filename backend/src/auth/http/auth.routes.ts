@@ -9,9 +9,10 @@ import { env } from "../../config/env.js";
 export const authRouter = Router();
 
 authRouter.post("/refresh",async(req,res)=>{
-    const { sessionId, refreshToken } = req.body;
+    const { sessionId, refreshToken,userId } = req.body;
 
-    if (!sessionId || !refreshToken) {
+
+    if (!sessionId || !refreshToken || !userId) {
         return res.status(400).json({ error: "Missing sessionId or refreshToken" });
     }
 
@@ -22,7 +23,7 @@ authRouter.post("/refresh",async(req,res)=>{
         });
 
         const accessToken = issueAccessToken({
-            sub:"unknown",
+            sub:userId,
             sid:sessionId,
         });
 
@@ -50,9 +51,21 @@ authRouter.post("/logout",requireAuth,async(req,res)=>{
 })
 
 authRouter.get("/me", requireAuth, async (req, res) => {
-  return res.json({
-    auth: req.auth,
-  });
+    const {userId} = req.auth!;
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            githubId: true,
+            username: true
+        },
+    });
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
 });
 
 authRouter.post("/cli/login-request",async(_req,res)=>{
@@ -92,7 +105,7 @@ authRouter.get("/cli/login-status",async(req,res)=>{
     }
 
     if(loginRequest.expiresAt < new Date()){
-        return res.status(410).json({status:"expired"});
+        return res.json({status:"expired"});
     }
 
     if(!loginRequest.sessionId){
@@ -104,11 +117,21 @@ authRouter.get("/cli/login-status",async(req,res)=>{
         sid: loginRequest.sessionId,
     });
 
-    return res.json({
+    await prisma.loginRequest.update({
+        where: { id: loginRequest.id },
+        data: {
+            refreshToken: null,
+        },
+    });
+
+    res.json({
         status: "completed",
         accessToken,
-        sessionId: loginRequest.sessionId,
+        refreshToken: loginRequest.refreshToken,
+        userId: loginRequest.session!.userId,
+        sessionId: loginRequest.sessionId
   });
+
 })
 
 authRouter.get("/github", (req, res) => {
@@ -180,6 +203,7 @@ authRouter.get("/github/callback",async(req,res)=>{
         data: {
             sessionId: session.sessionId,
             completedAt: new Date(),
+            refreshToken: session.refreshToken
         },
     });
 
