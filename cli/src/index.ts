@@ -7,6 +7,7 @@ import { status } from "./auth/status.js";
 import { authenticatedFetch } from "./auth/authenticated-fetch.js";
 import { whoami } from "./commands/whoami.js";
 import { startRepl } from "./repl/index.js";
+import { chat } from "./commands/chat.js";
 
 const program = new Command();
 
@@ -58,12 +59,23 @@ program
     })
   })
 
+program
+  .command("chat <message...>")
+  .description("Send a prompt to Termind AI")
+  .action((message:string[])=>{
+    chat(message.join(" ")).catch((err)=>{
+      console.error("Unexpected error: ",err);
+      process.exit(1);
+    })
+  })
+
 program.action(()=>{
   startRepl().catch((err)=>{
     console.error("Fatal error:",err);
     process.exit(1);
   })
 })
+
 
 program.parse(process.argv);
 

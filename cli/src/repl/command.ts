@@ -1,6 +1,7 @@
 import { login } from "../auth/login.js";
 import { logout } from "../auth/logout.js";
 import { status } from "../auth/status.js";
+import { chat } from "../commands/chat.js";
 import { whoami } from "../commands/whoami.js";
 
 export type ReplCommands = (args:string[]) => Promise<void>;
@@ -21,6 +22,11 @@ export const replCommands:Record<string,ReplCommands> = {
 
     whoami:async()=>{
         await whoami();
+    },
+
+    chat:async(args)=>{
+        const message = args.join(" ");
+        await chat(message);
     },
 
     help:async()=>{
