@@ -1,20 +1,45 @@
 import readline from "node:readline/promises";
 import { stdin as input,stdout as output } from "node:process";
 import { replCommands } from "./command.js";
+import { getPrompt } from "./prompt.js";
 
 export async function startRepl():Promise<void> {
 
     const rl = readline.createInterface({
         input,
-        output
+        output,
+        terminal:true
     });
 
     console.log("Welcome to Termind");
     console.log("Type 'help' to see available commands.\n");
 
+    let interruptedOnce = false;
+
+    rl.on('SIGINT', () => {
+        if (interruptedOnce) {
+            rl.close();
+        } else {
+            console.log("\n(Press Ctrl+C again to exit)");
+            interruptedOnce = true;
+        }
+    });
+
+    rl.on('close',()=>{
+        console.log("\nGoodbye!");
+        process.exit(0);
+    })
+
     try {
         while(true){
-            const line = await rl.question("> ");
+            let line: string;
+
+            try {
+                line = await rl.question(getPrompt());
+                interruptedOnce = false;
+            } catch (error) {
+                continue;
+            }
 
             const trimmed = line.trim();
 
@@ -42,10 +67,7 @@ export async function startRepl():Promise<void> {
                 console.error(error?.message ?? "command failed")
             }
         }
-    } catch (error) {
-        
     } finally {
         rl.close();
-        console.log("\nGoodbye!")
     }
 }
