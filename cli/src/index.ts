@@ -6,13 +6,14 @@ import { logout } from "./auth/logout.js";
 import { status } from "./auth/status.js";
 import { authenticatedFetch } from "./auth/authenticated-fetch.js";
 import { whoami } from "./commands/whoami.js";
+import { startRepl } from "./repl/index.js";
 
 const program = new Command();
 
 program
   .name("termind")
   .description("Termind AI CLI")
-  .version("0.1.0");
+  .version("0.1.0")
 
 program
   .command("login")
@@ -57,10 +58,14 @@ program
     })
   })
 
+program.action(()=>{
+  startRepl().catch((err)=>{
+    console.error("Fatal error:",err);
+    process.exit(1);
+  })
+})
 
-
-program.parse();
-
+program.parse(process.argv);
 
 
 
