@@ -3,33 +3,40 @@ import { logout } from "../auth/logout.js";
 import { status } from "../auth/status.js";
 import { chat } from "../commands/chat.js";
 import { whoami } from "../commands/whoami.js";
+import { ChatSession } from "./chat-session.js";
 
-export type ReplCommands = (args:string[]) => Promise<void>;
+export type ReplCommands = (args: string[]) => Promise<void>;
 
-export const replCommands:Record<string,ReplCommands> = {
-    login:async(args)=>{
+export type ReplContext = {
+    chatSession:ChatSession;
+}
+
+export type ReplHandler = (args:string[],context:ReplContext) => Promise<void>;
+
+export const replCommands: Record<string, ReplHandler> = {
+    login: async (args) => {
         const wait = args.includes("--wait");
         await login(wait);
     },
 
-    logout:async ()=>{
+    logout: async () => {
         await logout();
     },
 
-    status:async()=>{
+    status: async () => {
         status();
     },
 
-    whoami:async()=>{
+    whoami: async () => {
         await whoami();
     },
 
-    chat:async(args)=>{
+    chat: async (args,context) => {
         const message = args.join(" ");
-        await chat(message);
+        await chat(message,context.chatSession);
     },
 
-    help:async()=>{
+    help: async () => {
         console.log(`Available commands:
                 login[--wait]
                 logout
