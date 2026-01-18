@@ -17,4 +17,7 @@ export const env = {
   githubClientId: getEnv("GITHUB_CLIENT_ID"),
   githubClientSecret: getEnv("GITHUB_CLIENT_SECRET"),
   githubCallbackUrl: getEnv("GITHUB_CALLBACK_URL"),
+
+  openRouterApiKey: getEnv("OPENROUTER_API_KEY"),
+  llmModel: process.env.LLM_MODEL || "google/gemini-2.0-flash-exp:free",
 };
