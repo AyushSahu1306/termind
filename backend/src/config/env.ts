@@ -19,5 +19,5 @@ export const env = {
   githubCallbackUrl: getEnv("GITHUB_CALLBACK_URL"),
 
   openRouterApiKey: getEnv("OPENROUTER_API_KEY"),
-  llmModel: process.env.LLM_MODEL || "google/gemini-2.0-flash-exp:free",
+  llmModel: process.env.LLM_MODEL || "openai/gpt-oss-120b:free",
 };

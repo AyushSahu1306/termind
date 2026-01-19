@@ -1,7 +1,14 @@
 import { authenticatedFetch } from "../auth/authenticated-fetch.js";
-import type { ChatSession,ChatMessage } from "../repl/chat-session.js";
+import type { ChatSession, ChatMessage } from "../repl/chat-session.js";
+import { marked } from "marked";
+import TerminalRenderer from "marked-terminal";
+import ora from "ora";
 
-export async function chat(message: string,session:ChatSession): Promise<void> {
+marked.setOptions({
+    renderer: new TerminalRenderer() as any
+});
+
+export async function chat(message: string, session: ChatSession): Promise<void> {
   if (!message) {
     console.log("Usage: chat <your message>");
     return;
@@ -9,12 +16,17 @@ export async function chat(message: string,session:ChatSession): Promise<void> {
 
   session.addUserMessage(message);
 
+  const spinner = ora("Thinking...");
+
   try {
+    spinner.start();
     const reply = await chatWithHistory(session.getHistory());
+    spinner.stop();
     session.addAssistantMessage(reply);
-    console.log(reply);
-  } catch (error:any) {
-    console.error("Chat request failed: ", error.message);
+    console.log(marked(reply));
+  } catch (error: any) {
+    spinner.fail("Chat request failed");
+    // console.error("Chat request failed: ", error.message);
   }
 }
 

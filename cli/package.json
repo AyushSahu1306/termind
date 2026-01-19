@@ -16,10 +16,20 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "figlet": "^1.9.4",
+    "gradient-string": "^3.0.0",
+    "marked": "^17.0.1",
+    "marked-terminal": "^7.3.0",
+    "ora": "^5.4.1"
   },
   "devDependencies": {
+    "@types/figlet": "^1.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "@types/marked": "^5.0.2",
+    "@types/marked-terminal": "^6.1.1",
     "@types/node": "^20.0.0",
+    "@types/ora": "^3.1.0",
     "ts-node": "^10.9.0",
     "tsx": "^4.21.0",
     "typescript": "^5.0.0"
