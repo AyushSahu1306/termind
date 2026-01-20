@@ -3,6 +3,7 @@ import { stdin as input, stdout as output } from "node:process";
 import { replCommands } from "./command.js";
 import { getPrompt } from "./prompt.js";
 import { ChatSession } from "./chat-session.js";
+import { printBanner } from "../ui/ui.service.js";
 
 export async function startRepl(): Promise<void> {
 
@@ -14,8 +15,7 @@ export async function startRepl(): Promise<void> {
 
     const chatSession = new ChatSession();
 
-    console.log("Welcome to Termind");
-    console.log("Type 'help' to see available commands.\n");
+    printBanner();
 
     let interruptedOnce = false;
 

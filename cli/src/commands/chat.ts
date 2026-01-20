@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { authenticatedFetch } from "../auth/authenticated-fetch.js";
 import type { ChatSession, ChatMessage } from "../repl/chat-session.js";
 import { marked } from "marked";
@@ -5,7 +6,16 @@ import TerminalRenderer from "marked-terminal";
 import ora from "ora";
 
 marked.setOptions({
-    renderer: new TerminalRenderer() as any
+    renderer: new TerminalRenderer({
+        // Custom Theme
+        code: chalk.yellow,
+        blockquote: chalk.gray.italic,
+        heading: chalk.bold.magenta, 
+        firstHeading: chalk.bold.magenta.underline,
+        strong: chalk.bold.cyan,
+        em: chalk.italic,
+        link: chalk.blue.underline
+    }) as any
 });
 
 export async function chat(message: string, session: ChatSession): Promise<void> {
