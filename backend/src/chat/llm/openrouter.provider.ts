@@ -49,6 +49,46 @@ const TOOLS = [
             },
         },
     },
+
+    {
+        type: "function" as const,
+        function: {
+            name: "write_file",
+            description: "Create or overwrite a file with new content. Automatically creates directories if needed.",
+            parameters: {
+                type: "object",
+                properties: {
+                    path: { 
+                        type: "string", 
+                        description: "The relative path to the file (e.g. './src/components/Button.tsx')" 
+                    },
+                    content: { 
+                        type: "string", 
+                        description: "The full content to write to the file." 
+                    }
+                },
+                required: ["path", "content"],
+            },
+        },
+    },
+
+    {
+        type: "function" as const,
+        function: {
+            name: "delete_file",
+            description: "Delete a file permanently. Use with caution.",
+            parameters: {
+                type: "object",
+                properties: {
+                    path: { 
+                        type: "string", 
+                        description: "The relative path to the file to delete" 
+                    }
+                },
+                required: ["path"],
+            },
+        },
+    },
 ]
 
 export class OpenRouterProvider implements LLMProvider {
@@ -66,7 +106,7 @@ export class OpenRouterProvider implements LLMProvider {
             const openAIMessages = [
                 {
                     role: "system" as const,
-                    content: "You are Termind, an advanced AI CLI assistant. You have access to the file system. Always summarize your findings. If a tool returns an error, explain it to the user. Do not return empty content."
+                    content: "You are Termind, an advanced AI CLI assistant. You have access to the file system. Always summarize your findings. If a tool returns an error, explain it to the user. Do not return empty content.When writing files, always output the COMPLETE file content, do not use placeholders."
                 },
                 ...messages.map(m => {
                     if (m.role === "tool") {
