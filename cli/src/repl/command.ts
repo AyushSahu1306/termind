@@ -42,6 +42,7 @@ export const replCommands: Record<string, ReplHandler> = {
                 logout
                 status
                 whoami
+                chat <message>
                 help
                 exit
             `.trim());

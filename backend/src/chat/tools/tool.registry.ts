@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as fs from "fs/promises";
 
-function getSafepath(targetPath:string):string {
-    const baseDir = process.cwd();
+function getSafepath(targetPath:string,customCwd?:string):string {
+    const baseDir =  customCwd || process.cwd();
     const resolvedPath = path.resolve(baseDir,targetPath);
 
     if(!resolvedPath.startsWith(baseDir)){
@@ -18,48 +18,57 @@ export const toolRegistry:Record<string,Function> = {
         return new Date().toLocaleString();
     },
 
-    list_dir:async({path:inputPath}:{path:string})=>{
+    list_dir: async ({ path: inputPath }: { path: string }, context?: { cwd: string }) => {
         try {
-            const p = getSafepath(inputPath);
-            const items = await fs.readdir(p,{withFileTypes:true});
-            return items.map(item=>{
-                return item.isDirectory()? `${item.name}/`:item.name;
+            const p = getSafepath(inputPath, context?.cwd);
+            const items = await fs.readdir(p, { withFileTypes: true });
+            return items.map(item => {
+                return item.isDirectory() ? `${item.name}/` : item.name;
             }).join("\n");
-        } catch (error:any) {
-             return `Error listing directory: ${error.message}`;
+        } catch (error: any) {
+            return `Error listing directory: ${error.message}`;
         }
     },
 
-    read_file:async({path:inputPath}:{path:string}) => {
+    read_file: async ({ path: inputPath }: { path: string }, context?: { cwd: string }) => {
         try {
-            const p = getSafepath(inputPath);
-            const content = await fs.readFile(p,"utf-8");
+            const p = getSafepath(inputPath, context?.cwd);
+            const content = await fs.readFile(p, "utf-8");
             return content;
-        } catch (error:any) {
+        } catch (error: any) {
             return `Error reading file: ${error.message}`;
         }
     },
 
-    write_file:async({path:inputPath,content}:{path:string,content:string}) => {
+    write_file: async ({ path: inputPath, content }: { path: string, content: string }, context?: { cwd: string }) => {
         try {
-            const p = getSafepath(inputPath);
+            const p = getSafepath(inputPath, context?.cwd);
             const dir = path.dirname(p);
-            await fs.mkdir(dir,{recursive:true});
-            await fs.writeFile(p,content,"utf-8");
+            await fs.mkdir(dir, { recursive: true });
+            await fs.writeFile(p, content, "utf-8");
             return `Successfully wrote to ${inputPath}`;
-        } catch (error:any) {
-             return `Error writing file: ${error.message}`;  
+        } catch (error: any) {
+            return `Error writing file: ${error.message}`;
         }
     },
 
-    delete_file:async({path:inputPath}:{path:string})=>{
+    delete_file:async({path:inputPath}:{path:string}, context?: { cwd: string })=>{
         try {
-            const p = getSafepath(inputPath);
+            const p = getSafepath(inputPath,context?.cwd);
             await fs.unlink(p);
             return `Successfully deleted ${inputPath}`;
         } catch (error:any) {
             return `Error deleting file: ${error.message}`;
         }
     },
-    
+
+    delete_folder:async({path:inputPath}:{path:string}, context?: { cwd: string }) => {
+        try {
+            const p = getSafepath(inputPath,context?.cwd);
+            await fs.rm(p,{recursive:true,force:true});
+            return `Successfully deleted folder ${inputPath}`;
+        } catch (error: any) {
+            return `Error deleting folder: ${error.message}`;
+        }
+    }
 } 

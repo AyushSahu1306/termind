@@ -7,7 +7,7 @@ export function printBanner() {
     console.clear();
 
     const banner = figlet.textSync("TERMIND", {
-        font: "Standard", 
+        font: "Standard",
         horizontalLayout: "default",
         verticalLayout: "default"
     });
@@ -19,9 +19,8 @@ export function printBanner() {
     ${chalk.bold.cyan("Welcome to Termind AI CLI")}
     
     ${chalk.gray("Tips for getting started:")}
-    1. Ask questions naturally: "How do I deploy this?"
-    2. Explore your code: "List files in src"
-    3. Type ${chalk.magenta("exit")} to quit.
-    4. Type ${chalk.magenta("help")} to see available commands.
+    1. Ask questions or edit files.
+    2. Type ${chalk.magenta("exit")} to quit.
+    3. Type ${chalk.magenta("help")} to see available commands.
     `);
 }

@@ -89,6 +89,24 @@ const TOOLS = [
             },
         },
     },
+
+    {
+        type: "function" as const,
+        function: {
+            name: "delete_folder",
+            description: "Delete a FOLDER and all its contents. EXTREMELY DANGEROUS.",
+            parameters: {
+                type: "object",
+                properties: {
+                    path: { 
+                        type: "string", 
+                        description: "The relative path to the folder to delete" 
+                    }
+                },
+                required: ["path"],
+            },
+        },
+    },
 ]
 
 export class OpenRouterProvider implements LLMProvider {
@@ -145,11 +163,19 @@ export class OpenRouterProvider implements LLMProvider {
             });
             const choice = completion.choices[0]?.message;
             if (!choice) throw new Error("No response from AI");
-              const toolCalls: ToolCall[] = choice.tool_calls?.map((tc:any) => ({
-                id: tc.id,
-                name: tc.function.name,
-                arguments: JSON.parse(tc.function.arguments)
-            })) || [];
+                        const toolCalls: ToolCall[] = choice.tool_calls?.reduce((acc: ToolCall[], tc: any) => {
+                try {
+                    const args = JSON.parse(tc.function.arguments);
+                    acc.push({
+                        id: tc.id,
+                        name: tc.function.name,
+                        arguments: args
+                    });
+                } catch (e) {
+                    console.warn(`Failed to parse arguments for tool ${tc.function.name}. skipping.`);
+                }
+                return acc;
+            }, []) || [];
             return {
                 content: choice.content,
                 toolCalls: toolCalls.length > 0 ? toolCalls : undefined

@@ -6,16 +6,19 @@ import TerminalRenderer from "marked-terminal";
 import ora from "ora";
 
 marked.setOptions({
-    renderer: new TerminalRenderer({
-        // Custom Theme
-        code: chalk.yellow,
-        blockquote: chalk.gray.italic,
-        heading: chalk.bold.magenta, 
-        firstHeading: chalk.bold.magenta.underline,
-        strong: chalk.bold.cyan,
-        em: chalk.italic,
-        link: chalk.blue.underline
-    }) as any
+  renderer: new TerminalRenderer({
+    // Custom Theme
+    code: (text: string) => {
+      return chalk.bgHex('#2b2b2b').white(`  ${text}  `);
+    },
+    codespan: chalk.bgHex('#2b2b2b').yellow,
+    blockquote: chalk.gray.italic,
+    heading: chalk.bold.magenta,
+    firstHeading: chalk.bold.magenta.underline,
+    strong: chalk.bold.cyan,
+    em: chalk.italic,
+    link: chalk.blue.underline
+  }) as any
 });
 
 export async function chat(message: string, session: ChatSession): Promise<void> {
@@ -36,7 +39,7 @@ export async function chat(message: string, session: ChatSession): Promise<void>
     console.log(marked(reply));
   } catch (error: any) {
     spinner.fail("Chat request failed");
-    // console.error("Chat request failed: ", error.message);
+    console.error("Debug Error:", error.message);
   }
 }
 
@@ -46,7 +49,10 @@ export async function chatWithHistory(
   const res = await authenticatedFetch("http://localhost:3000/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ 
+        messages,
+        cwd:process.cwd()
+      }),
   });
 
   if (!res.ok) {

@@ -7,7 +7,7 @@ import { toolRegistry } from "./tools/tool.registry.js";
 export const chatRouter = Router();
 
 chatRouter.post("/", requireAuth, async (req, res) => {
-    const { messages } = req.body;
+    const { messages,cwd } = req.body;
 
     if(!Array.isArray(messages)){
         return res.status(400).json({error:"messages must be an array"});
@@ -36,12 +36,12 @@ chatRouter.post("/", requireAuth, async (req, res) => {
             const response = await llm.sendMessage(history);
             console.log("AI Response:", { content: response.content, toolCalls: response.toolCalls?.length });
 
-            if(response.toolCalls){
+            if(response.toolCalls && response.toolCalls.length > 0){
                 console.log(`🛠️ Executing ${response.toolCalls.length} tools...`);
                 history.push({
-                    role:"assistant",
-                    content:response.content || "",
-                    toolCalls:response.toolCalls,
+                    role: "assistant",
+                    content: response.content || "",
+                    toolCalls: response.toolCalls,
                 });
                 const results = await Promise.all(response.toolCalls.map(async (call) => {
                     const toolFunc = toolRegistry[call.name];
@@ -50,7 +50,7 @@ chatRouter.post("/", requireAuth, async (req, res) => {
                     if (toolFunc) {
                         try {
                             console.log(`Running ${call.name} with`, call.arguments);
-                            result = await toolFunc(call.arguments);
+                            result = await toolFunc(call.arguments,{cwd});
                         } catch (err: any) {
                             result = `Error executing tool: ${err.message}`;
                         }
@@ -67,11 +67,22 @@ chatRouter.post("/", requireAuth, async (req, res) => {
                 history.push(...results);
                 continue;
             }
-            console.log("Loop finished. Returning:", response.content);
-            return res.status(200).json({ reply: response.content });
+            const finalReply = response.content || "(Error: AI response was empty or incomplete. Try asking for smaller tasks.)";
+            console.log("Loop finished. Returning:", finalReply);
+            return res.status(200).json({ reply: finalReply });
         }
 
-        return res.status(500).json({ error: "Too many tool loops" });
+        // return res.status(500).json({ error: "Too many tool loops" });
+        // Graceful exit: Ask LLM to summarize and pause
+        console.log("Max loops reached. Asking for summary...");
+        history.push({
+            role: "system",
+            content: "You have reached the maximum number of tool steps for one turn. Please stop now. Summarize what you have done so far and tell the user you are pausing to let them review. Ask if they want you to continue."
+        });
+
+        const summaryResponse = await llm.sendMessage(history);
+        const finalReply = summaryResponse.content || "(Paused due to step limit. Type 'continue' to proceed.)";
+        return res.status(200).json({ reply: finalReply });
     } catch (error: any) {
         console.error("Chat Error:", error);
         res.status(500).json({ error: "Failed to generate response" });
