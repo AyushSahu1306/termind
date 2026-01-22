@@ -65,7 +65,7 @@ export async function startRepl(): Promise<void> {
             }
 
             try {
-                await handler(args,{chatSession});
+                await handler(args,{chatSession,rl});
             } catch (error: any) {
                 console.error(error?.message ?? "command failed")
             }

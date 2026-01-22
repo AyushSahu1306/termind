@@ -1,6 +1,6 @@
 import { loadAuthStore, saveAuthStore } from "./token-store.js";
 
-export async function login(wait=false) : Promise<void> {
+export async function login(wait=true) : Promise<void> {
     const store = loadAuthStore();
 
     if(store.activeAccountId){
@@ -10,10 +10,12 @@ export async function login(wait=false) : Promise<void> {
         return;
     }
 
-    if (store.pendingLoginRequestId && !wait) {
-        console.log("A login is already in progress.");
-        console.log("Run `termind login --wait` to complete it.");
-        return;
+    if (store.pendingLoginRequestId) {
+        if (!wait) {
+            console.log("A login is already in progress.");
+            console.log("Run `termind login` to complete it.");
+            return;
+        }
     }
 
     if(!store.pendingLoginRequestId){

@@ -20,9 +20,8 @@ program
 program
   .command("login")
   .description("Log in to Termind")
-  .option("--wait","Wait for login to complete")
-  .action((options)=>{
-    login(Boolean(options.wait)).catch((err)=>{
+  .action(()=>{
+    login(true).catch((err)=>{
       console.error("Unexpected error : ",err);
       process.exit(1);  
     })
