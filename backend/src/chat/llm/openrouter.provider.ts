@@ -127,6 +127,24 @@ const TOOLS = [
             },
         },
     },
+
+        {
+        type: "function" as const,
+        function: {
+            name: "run_command",
+            description: "Execute a shell command. Use this for git, npm, or complex file operations. Chain commands with && if needed.",
+            parameters: {
+                type: "object",
+                properties: {
+                    command: { 
+                        type: "string", 
+                        description: "The command to run (e.g. 'npm install', 'git status', 'cd client && npm test')" 
+                    }
+                },
+                required: ["command"],
+            },
+        },
+    },
 ]
 
 export class OpenRouterProvider implements LLMProvider {

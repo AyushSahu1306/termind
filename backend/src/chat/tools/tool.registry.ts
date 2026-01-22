@@ -1,5 +1,10 @@
 import * as path from "path";
 import * as fs from "fs/promises";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+
+const execAsync = promisify(exec);
 
 function getSafepath(targetPath:string,customCwd?:string):string {
     const baseDir =  customCwd || process.cwd();
@@ -69,6 +74,19 @@ export const toolRegistry:Record<string,Function> = {
             return `Successfully deleted folder ${inputPath}`;
         } catch (error: any) {
             return `Error deleting folder: ${error.message}`;
+        }
+    },
+
+    run_command:async({command}:{command:string},context?:{cwd:string}) => {
+        try {
+            console.log(`Executing: ${command} in ${context?.cwd}`);
+            const {stdout,stderr} = await execAsync(command,{
+                cwd:context?.cwd || process.cwd()
+            })
+            const output = stdout || stderr;
+            return output ? output.trim() : "Command executed successfully (no output).";
+        } catch (error:any) {
+            return `Command failed: ${error.message}\nStderr: ${error.stderr}`;
         }
     }
 } 
