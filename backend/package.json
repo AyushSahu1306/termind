@@ -7,6 +7,7 @@
     "build": "tsc && npm run copy-generated",
     "copy-generated": "copyfiles -u 1 \"src/generated/**\" dist",
     "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,6 +21,7 @@
     "copyfiles": "^2.4.1",
     "cpy": "^12.1.0",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {

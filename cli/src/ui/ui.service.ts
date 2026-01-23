@@ -16,11 +16,12 @@ export function printBanner() {
 
 
     console.log(`
-    ${chalk.bold.cyan("Welcome to Termind AI CLI")}
-    
-    ${chalk.gray("Tips for getting started:")}
-    1. Ask questions or edit files.
-    2. Type ${chalk.magenta("exit")} to quit.
-    3. Type ${chalk.magenta("help")} to see available commands.
+        ${chalk.bold.cyan("Welcome to Termind AI CLI")}
+        
+        ${chalk.gray("Tips for getting started:")}
+        1. Type ${chalk.magenta("chat")} to enter interactive mode.
+        2. Ask me to ${chalk.green("run commands")} like 'npm install'.
+        3. Ask me to ${chalk.green("search")} and edit your code.
+        4. Type ${chalk.magenta("help")} to see available commands.
     `);
 }

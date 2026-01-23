@@ -88,5 +88,61 @@ export const toolRegistry:Record<string,Function> = {
         } catch (error:any) {
             return `Command failed: ${error.message}\nStderr: ${error.stderr}`;
         }
+    },
+
+    search: async({query}:{query:string},context?:{cwd:string}) => {
+        try {
+            const startPath = context?.cwd || process.cwd();
+            console.log(`Searching for "${query}" in ${startPath}`);
+
+            const results: string[] = [];
+            const MAX_RESULTS = 50;
+
+            async function walk(currentPath:string) {
+                if (results.length >= MAX_RESULTS) return;
+                const items = await fs.readdir(currentPath, { withFileTypes: true });
+
+                for(const item of items){
+                    if(results.length >= MAX_RESULTS) break;
+
+                    const fullPath = path.join(currentPath,item.name);
+
+                    if (item.name.startsWith(".") || item.name === "node_modules" || item.name === "dist") {
+                         continue;
+                     }
+
+                    if(item.isDirectory()){
+                        await walk(fullPath);
+                    }
+
+                    else {
+                        try {
+                            const content = await fs.readFile(fullPath, "utf-8");
+                            if (content.includes(query)) {
+                                const lines = content.split("\n");
+                                lines.forEach((line,index)=>{
+                                    if (line.includes(query) && results.length < MAX_RESULTS) {
+                                        const relativePath = path.relative(startPath, fullPath);
+                                        results.push(`${relativePath}:${index + 1}: ${line.trim()}`);
+                                    }
+                                })
+                            }
+                        } catch (error) {
+                            
+                        }
+                    }
+                }
+            }
+
+            await walk(startPath);
+
+            if(results.length === 0){
+                return "No matches found.";
+            }
+            return `Found ${results.length} matches:\n` + results.join("\n");
+
+        } catch (error:any) {
+            return `Search failed: ${error.message}`;
+        }
     }
 } 

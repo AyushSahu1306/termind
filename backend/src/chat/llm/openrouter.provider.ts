@@ -145,6 +145,24 @@ const TOOLS = [
             },
         },
     },
+
+        {
+        type: "function" as const,
+        function: {
+            name: "search",
+            description: "Search for a string or code pattern across the entire project. Useful for finding where functions, classes, or variables are defined.",
+            parameters: {
+                type: "object",
+                properties: {
+                    query: { 
+                        type: "string", 
+                        description: "The string to search for (e.g. 'ChatSession', 'function login')" 
+                    }
+                },
+                required: ["query"],
+            },
+        },
+    },
 ]
 
 export class OpenRouterProvider implements LLMProvider {
